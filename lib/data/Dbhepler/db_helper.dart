@@ -41,7 +41,8 @@ class DBHelper {
             timeRange TEXT,
             location TEXT,
             organizer TEXT,
-            notes TEXT
+            notes TEXT,
+            isCompleted INTEGER DEFAULT 0
           )
         ''');
 
@@ -133,5 +134,33 @@ class DBHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<Map<String, int>> getTaskStatistics() async {
+    final db = await database;
+
+    // Get the total count of tasks
+    final totalTasksCount = Sqflite.firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM tasks')) ??
+        0;
+
+    // Get the count of completed tasks
+    final completedTasksCount = Sqflite.firstIntValue(await db
+            .rawQuery('SELECT COUNT(*) FROM tasks WHERE isCompleted = 1')) ??
+        0;
+
+    // Calculate the count of new tasks
+    final newTasksCount = totalTasksCount - completedTasksCount;
+
+    // Get the count of tasks in progress
+    final inProgressTasksCount = Sqflite.firstIntValue(await db
+            .rawQuery('SELECT COUNT(*) FROM tasks WHERE isCompleted = 0')) ??
+        0;
+
+    return {
+      'completed': completedTasksCount,
+      'new': newTasksCount,
+      'inProgress': inProgressTasksCount,
+    };
   }
 }

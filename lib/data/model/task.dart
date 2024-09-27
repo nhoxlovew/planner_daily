@@ -6,6 +6,7 @@ class Task {
   final String location;
   final String organizer;
   final String notes;
+  final int isCompleted;
 
   Task({
     this.id,
@@ -15,6 +16,7 @@ class Task {
     required this.location,
     required this.organizer,
     required this.notes,
+    required this.isCompleted,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class Task {
       'location': location,
       'organizer': organizer,
       'notes': notes,
+      'isCompleted': isCompleted,
     };
   }
 
@@ -38,6 +41,7 @@ class Task {
       location: map['location'],
       organizer: map['organizer'],
       notes: map['notes'],
+      isCompleted: map['isCompleted'],
     );
   }
 }

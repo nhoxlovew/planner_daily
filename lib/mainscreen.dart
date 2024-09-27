@@ -7,7 +7,6 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
@@ -17,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   // List of screens
   final List<Widget> _screens = [
     TaskListScreen(),
-    CalendarScreen(),
+    CalendarScreen(tasks: []), // Placeholder, will be updated in TaskListScreen
     SettingsScreen(),
   ];
 

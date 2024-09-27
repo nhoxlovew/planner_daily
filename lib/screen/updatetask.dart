@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Để định dạng ngày tháng
-import 'package:planner_daily/data/Dbhepler/db_helper.dart'; // DBHelper
-import 'package:planner_daily/data/model/task.dart'; // Model Task
+import 'package:intl/intl.dart';
+import 'package:planner_daily/data/Dbhepler/db_helper.dart';
+import 'package:planner_daily/data/model/task.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   final Task task;
@@ -14,19 +14,18 @@ class UpdateTaskScreen extends StatefulWidget {
 
 class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   final _formKey = GlobalKey<FormState>();
+
   late String _content;
   late String _timeRange;
   late String _location;
   late String _organizer;
   late String _notes;
-  late DateTime _selectedDate;
-
-  // Sample data for dropdowns
-  List<String> _organizers = ['Thanh Ngân', 'Hữu Nghĩa', 'Other'];
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
+    // Prepopulate fields with existing task data
     _content = widget.task.content;
     _timeRange = widget.task.timeRange;
     _location = widget.task.location;
@@ -41,23 +40,24 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
       final updatedTask = Task(
         id: widget.task.id,
-        day: DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate),
+        day: DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate!),
         content: _content,
         timeRange: _timeRange,
         location: _location,
         organizer: _organizer,
         notes: _notes,
+        isCompleted: widget.task.isCompleted, // Keep original completion status
       );
 
       await DBHelper().updateTask(updatedTask);
-      Navigator.pop(context, updatedTask); // Trả về nhiệm vụ đã cập nhật
+      Navigator.pop(context, updatedTask);
     }
   }
 
   Future<void> _pickDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
@@ -72,7 +72,15 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF57015A),
         title: Text('Update Task'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            color: Colors.white,
+            onPressed: _updateTask,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -82,8 +90,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             children: <Widget>[
               // Date Picker
               ListTile(
-                title:
-                    Text(DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate)),
+                title: Text(_selectedDate == null
+                    ? 'Select a Date'
+                    : DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate!)),
                 trailing: Icon(Icons.calendar_today),
                 onTap: _pickDate,
               ),
@@ -121,20 +130,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
               SizedBox(height: 16),
 
               // Organizer
-              DropdownButtonFormField<String>(
-                value: _organizer,
-                items: _organizers.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              TextFormField(
+                initialValue: _organizer,
                 decoration: InputDecoration(labelText: 'Organizer'),
-                onChanged: (value) {
-                  setState(() {
-                    _organizer = value!;
-                  });
-                },
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter the organizer' : null,
+                onSaved: (value) => _organizer = value!,
               ),
               SizedBox(height: 16),
 
@@ -145,12 +146,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 onSaved: (value) => _notes = value!,
               ),
               SizedBox(height: 16),
-
-              // Update Button
-              ElevatedButton(
-                onPressed: _updateTask,
-                child: Text('Update Task'),
-              ),
             ],
           ),
         ),

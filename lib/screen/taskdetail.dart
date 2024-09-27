@@ -14,6 +14,7 @@ class TaskDetailScreen extends StatefulWidget {
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   final _formKey = GlobalKey<FormState>();
+
   late String _content;
   late String _timeRange;
   late String _location;
@@ -36,6 +37,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Future<void> _updateTask() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       final updatedTask = Task(
         id: widget.task.id,
         day: DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate!),
@@ -44,6 +46,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         location: _location,
         organizer: _organizer,
         notes: _notes,
+        isCompleted: widget.task.isCompleted, // Keep original completion status
       );
 
       await DBHelper().updateTask(updatedTask);
@@ -74,7 +77,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.save),
-            color: Colors.white, // Thay đổi màu sắc của biểu tượng
+            color: Colors.white,
             onPressed: _updateTask,
           ),
         ],

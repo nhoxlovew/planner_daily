@@ -21,69 +21,66 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String? _organizer;
   String? _notes;
   DateTime? _selectedDate;
+  bool _isCompleted = false; // Track completion status
 
-  // Sample data for dropdowns
   List<String> _organizers = ['Thanh Ngân', 'Hữu Nghĩa', 'Other'];
 
   @override
   void initState() {
     super.initState();
     if (widget.task != null) {
-      // If editing an existing task, prepopulate fields
+      // If editing an existing task, fill in the fields
       _content = widget.task!.content;
       _timeRange = widget.task!.timeRange;
       _location = widget.task!.location;
       _organizer = widget.task!.organizer;
       _notes = widget.task!.notes;
       _selectedDate = DateFormat('EEEE, dd/MM/yyyy').parse(widget.task!.day);
+      _isCompleted =
+          widget.task!.isCompleted == 1; // Determine completion status
     }
   }
 
   Future<void> _submitTask() async {
     if (_isSubmitting) {
-      print('Task is already being submitted.'); // Ghi log khi đã gửi nhiệm vụ
+      print('Task is already being submitted.');
       return;
     }
 
-    _isSubmitting = true; // Đánh dấu là đang xử lý
-    print('Submit task called'); // Ghi log
+    _isSubmitting = true;
 
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       final task = Task(
-        id: widget.task?.id,
+        id: widget.task?.id, // Keep ID for update
         day: DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate!),
         content: _content!,
         timeRange: _timeRange!,
         location: _location!,
         organizer: _organizer!,
         notes: _notes ?? '',
+        isCompleted: _isCompleted ? 1 : 0, // Store completion status as int
       );
 
-      print('Submitting task: $task'); // Ghi log
-
-      if (await _taskExists(task)) {
-        print('Task already exists, not adding again.');
-        _isSubmitting = false; // Đánh dấu kết thúc
-        return;
-      }
+      // Optional: Check if task exists
+      // if (await _taskExists(task)) {
+      //   _isSubmitting = false;
+      //   return;
+      // }
 
       if (widget.task == null) {
         await DBHelper().createTask(task);
-        print('New task added: $task'); // Ghi log
       } else {
         await DBHelper().updateTask(task);
-        print('Task updated: $task'); // Ghi log
       }
 
-      Navigator.pop(context, task);
+      Navigator.pop(context, task); // Return the created or updated task
     }
 
-    _isSubmitting = false; // Đánh dấu kết thúc
-    print('Task submission complete'); // Ghi log
+    _isSubmitting = false; // Reset submitting status
   }
 
-  // Hàm kiểm tra xem nhiệm vụ có tồn tại không
   Future<bool> _taskExists(Task task) async {
     final db = await DBHelper().database;
     final List<Map<String, dynamic>> result = await db.query(
@@ -92,11 +89,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       whereArgs: [task.content, task.day],
     );
 
-    // Ghi log để kiểm tra kết quả truy vấn
-    print(
-        'Checking if task exists: content=${task.content}, day=${task.day}, result=${result.isNotEmpty}');
-
-    return result.isNotEmpty; // Trả về true nếu nhiệm vụ đã tồn tại
+    return result.isNotEmpty; // Return true if task exists
   }
 
   Future<void> _pickDate() async {
@@ -125,7 +118,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              // Date Picker
               ListTile(
                 title: Text(_selectedDate == null
                     ? 'Select a Date'
@@ -134,8 +126,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onTap: _pickDate,
               ),
               SizedBox(height: 16),
-
-              // Task Content
               TextFormField(
                 initialValue: _content,
                 decoration: InputDecoration(labelText: 'Task Content'),
@@ -144,8 +134,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onSaved: (value) => _content = value,
               ),
               SizedBox(height: 16),
-
-              // Time Range
               TextFormField(
                 initialValue: _timeRange,
                 decoration: InputDecoration(
@@ -155,8 +143,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onSaved: (value) => _timeRange = value,
               ),
               SizedBox(height: 16),
-
-              // Location
               TextFormField(
                 initialValue: _location,
                 decoration: InputDecoration(labelText: 'Location'),
@@ -165,8 +151,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onSaved: (value) => _location = value,
               ),
               SizedBox(height: 16),
-
-              // Organizer
               DropdownButtonFormField<String>(
                 value: _organizer,
                 items: _organizers.map((String value) {
@@ -185,20 +169,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 },
               ),
               SizedBox(height: 16),
-
-              // Notes
               TextFormField(
                 initialValue: _notes,
                 decoration: InputDecoration(labelText: 'Notes'),
                 onSaved: (value) => _notes = value,
               ),
               SizedBox(height: 16),
-
-              // Submit Button
+              SwitchListTile(
+                title: Text('Completed'),
+                value: _isCompleted,
+                onChanged: (value) {
+                  setState(() {
+                    _isCompleted = value; // Toggle completion status
+                  });
+                },
+              ),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _isSubmitting
-                    ? null
-                    : _submitTask, // Vô hiệu hóa khi đang xử lý
+                    ? null // Disable when submitting
+                    : _submitTask,
                 child: Text(widget.task == null ? 'Add Task' : 'Update Task'),
               ),
             ],
