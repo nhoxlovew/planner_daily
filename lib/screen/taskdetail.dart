@@ -74,6 +74,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.save),
+            color: Colors.white, // Thay đổi màu sắc của biểu tượng
             onPressed: _updateTask,
           ),
         ],

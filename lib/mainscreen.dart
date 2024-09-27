@@ -47,7 +47,8 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blueAccent,
+        backgroundColor: Color.fromARGB(255, 123, 81, 124),
+        selectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),
     );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:planner_daily/data/Dbhepler/db_helper.dart';
 import 'package:planner_daily/data/model/task.dart';
 import 'package:planner_daily/screen/taskdetail.dart'; // Import màn hình Chi tiết Công việc
+import 'package:planner_daily/screen/updatetask.dart'; // Import màn hình Cập nhật Công việc
+import 'package:planner_daily/screen/addtask.dart'; // Import màn hình Thêm công việc
 
 class TaskListScreen extends StatefulWidget {
   @override
@@ -18,22 +20,33 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   Future<void> _loadTasks() async {
-    final tasks = await DBHelper()
-        .getTasks(); // Giả sử bạn có phương thức getTasks để lấy danh sách nhiệm vụ
+    final tasks = await DBHelper().getTasks(); // Lấy danh sách nhiệm vụ
     setState(() {
       _tasks = tasks;
     });
   }
 
   Future<void> _navigateToDetail(Task task) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            TaskDetailScreen(task: task), // Điều hướng đến TaskDetailScreen
+      ),
+    );
+  }
+
+  Future<void> _navigateToUpdate(Task task) async {
     final updatedTask = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TaskDetailScreen(task: task),
+        builder: (context) =>
+            UpdateTaskScreen(task: task), // Điều hướng đến UpdateTaskScreen
       ),
     );
 
     if (updatedTask != null) {
+      // Task was updated, reload the tasks
       _loadTasks(); // Tải lại danh sách nhiệm vụ sau khi cập nhật
     }
   }
@@ -71,7 +84,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF57015A),
-        title: Text('Task List'),
+        title:
+            Text('Danh sách công việc', style: TextStyle(color: Colors.white)),
+        automaticallyImplyLeading: false, // Remove the back button
       ),
       body: ListView.builder(
         itemCount: _tasks.length,
@@ -83,12 +98,23 @@ class _TaskListScreenState extends State<TaskListScreen> {
               title: Text(task.content),
               subtitle: Text(task.day),
               onTap: () =>
-                  _navigateToDetail(task), // Điều hướng đến Chi tiết Công việc
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => _deleteTask(
-                    task), // Gọi hàm xóa khi nhấn vào biểu tượng xóa
-                color: Colors.red,
+                  _navigateToDetail(task), // Điều hướng đến TaskDetailScreen
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => _navigateToUpdate(
+                        task), // Điều hướng đến UpdateTaskScreen
+                    color: Colors.blue,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => _deleteTask(
+                        task), // Gọi hàm xóa khi nhấn vào biểu tượng xóa
+                    color: Colors.red,
+                  ),
+                ],
               ),
             ),
           );
@@ -96,7 +122,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Thêm chức năng thêm công việc mới ở đây nếu cần
+          // Navigate to AddTaskScreen when the button is pressed
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AddTaskScreen()), // Navigate to AddTaskScreen
+          ).then((_) {
+            _loadTasks(); // Reload tasks after returning from AddTaskScreen
+          });
         },
         child: Icon(Icons.add),
       ),
