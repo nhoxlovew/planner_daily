@@ -104,6 +104,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
+  // Function to handle reordering of tasks
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final Task task = _tasks.removeAt(oldIndex);
+      _tasks.insert(newIndex, task);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider =
@@ -123,11 +134,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: ReorderableListView.builder(
         itemCount: _tasks.length,
+        onReorder: _onReorder,
         itemBuilder: (context, index) {
           final task = _tasks[index];
           return Card(
+            key: ValueKey(task.id),
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             color: themeProvider.isDarkMode
                 ? Colors.grey[850]
@@ -163,10 +176,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: _navigateToAddTask, // Navigate to AddTaskScreen
-          child: Icon(Icons.add),
-          hoverColor: Colors.white,
-          backgroundColor: Color(0xFF57015A)),
+        onPressed: _navigateToAddTask, // Navigate to AddTaskScreen
+        child: Icon(Icons.add),
+        hoverColor: Colors.white,
+        backgroundColor: Color(0xFF57015A),
+      ),
     );
   }
 }
