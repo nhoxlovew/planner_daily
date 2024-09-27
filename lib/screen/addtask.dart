@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For formatting the date
 import 'package:planner_daily/data/Dbhepler/db_helper.dart'; // Your DBHelper
 import 'package:planner_daily/data/model/task.dart'; // Your Task model
+import 'package:planner_daily/service/notification_service.dart'; // Import notification service
 
 class AddTaskScreen extends StatefulWidget {
   final Task? task;
@@ -22,6 +23,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String? _notes;
   DateTime? _selectedDate;
   bool _isCompleted = false; // Track completion status
+  DateTime? _reminderTime; // Add reminder time
 
   List<String> _organizers = ['Thanh Ngân', 'Hữu Nghĩa', 'Other'];
 
@@ -47,7 +49,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       return;
     }
 
-    _isSubmitting = true;
+    // Set submitting state to true
+    setState(() {
+      _isSubmitting = true;
+    });
 
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -63,33 +68,30 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         isCompleted: _isCompleted ? 1 : 0, // Store completion status as int
       );
 
-      // Optional: Check if task exists
-      // if (await _taskExists(task)) {
-      //   _isSubmitting = false;
-      //   return;
-      // }
-
       if (widget.task == null) {
         await DBHelper().createTask(task);
       } else {
         await DBHelper().updateTask(task);
       }
 
-      Navigator.pop(context, task); // Return the created or updated task
+      // Schedule notification if reminder time is set
+      if (_reminderTime != null) {
+        await NotificationService.scheduleNotification(
+          id: task.id!,
+          title: 'Task Reminder',
+          body: 'Time to complete the task: $_content',
+          scheduledTime: _reminderTime!,
+        );
+      }
+
+      // Pop the screen and return task to the previous screen
+      Navigator.of(context).pop(task); // Ensure to use Navigator.of(context)
     }
 
-    _isSubmitting = false; // Reset submitting status
-  }
-
-  Future<bool> _taskExists(Task task) async {
-    final db = await DBHelper().database;
-    final List<Map<String, dynamic>> result = await db.query(
-      'tasks',
-      where: 'content = ? AND day = ?',
-      whereArgs: [task.content, task.day],
-    );
-
-    return result.isNotEmpty; // Return true if task exists
+    // Reset submitting state
+    setState(() {
+      _isSubmitting = false;
+    });
   }
 
   Future<void> _pickDate() async {
@@ -103,6 +105,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       setState(() {
         _selectedDate = picked;
       });
+    }
+  }
+
+  Future<void> _pickReminderTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      final now = DateTime.now();
+      _reminderTime =
+          DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
     }
   }
 
@@ -183,6 +197,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     _isCompleted = value; // Toggle completion status
                   });
                 },
+              ),
+              SizedBox(height: 16),
+              ListTile(
+                title: Text(_reminderTime == null
+                    ? 'Set Reminder Time'
+                    : DateFormat.jm().format(_reminderTime!)),
+                trailing: Icon(Icons.alarm),
+                onTap: _pickReminderTime,
               ),
               SizedBox(height: 16),
               ElevatedButton(

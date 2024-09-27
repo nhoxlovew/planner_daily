@@ -63,7 +63,7 @@ class DBHelper {
       // Insert the test user
       await db.insert(
         'users',
-        {'username': 'testuser', 'password': 'password123'},
+        {'username': 'testuser@gmail.com', 'password': 'password123'},
         conflictAlgorithm:
             ConflictAlgorithm.ignore, // Ignore if user already exists
       );

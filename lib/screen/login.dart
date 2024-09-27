@@ -13,7 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   // Hardcoded test credentials
-  final String _testUsername = 'testuser';
+  final String _testUsername = 'testuser@gmail.com';
   final String _testPassword = 'password123';
 
   void _login() async {
