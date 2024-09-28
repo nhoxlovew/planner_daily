@@ -9,6 +9,8 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'package:planner_daily/theme/theme_provider.dart'; // Import your ThemeProvider
 
 class TaskListScreen extends StatefulWidget {
+  const TaskListScreen({super.key});
+
   @override
   _TaskListScreenState createState() => _TaskListScreenState();
 }
@@ -56,16 +58,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Xóa nhiệm vụ'),
-          content: Text('Bạn có chắc chắn muốn xóa nhiệm vụ này không?'),
+          title: const Text('Xóa nhiệm vụ'),
+          content: const Text('Bạn có chắc chắn muốn xóa nhiệm vụ này không?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Hủy'),
+              child: const Text('Hủy'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Xóa'),
+              child: const Text('Xóa'),
             ),
           ],
         );
@@ -123,12 +125,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF57015A),
-        title: Text('Danh sách công việc',
-            style: TextStyle(color: Colors.white, fontSize: 20)),
+        backgroundColor: const Color(0xFF57015A),
+        title: const Text('Danh sách công việc',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            )),
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today),
+            icon: const Icon(Icons.calendar_today),
             color: Colors.white,
             onPressed: _navigateToCalendar, // Navigate to CalendarScreen
           ),
@@ -141,7 +147,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           final task = _tasks[index];
           return Card(
             key: ValueKey(task.id),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             color: themeProvider.isDarkMode
                 ? Colors.grey[850]
                 : Colors.white, // Card background color
@@ -160,12 +166,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () => _navigateToUpdate(task),
                     color: Colors.blue,
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () => _deleteTask(task),
                     color: Colors.red,
                   ),
@@ -176,10 +182,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToAddTask, // Navigate to AddTaskScreen
+        onPressed: _navigateToAddTask,
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF57015A), // Navigate to AddTaskScreen
         child: Icon(Icons.add),
-        hoverColor: Colors.white,
-        backgroundColor: Color(0xFF57015A),
       ),
     );
   }

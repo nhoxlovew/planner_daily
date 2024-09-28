@@ -2,19 +2,21 @@ import 'package:planner_daily/screen/login.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Color(0xFF57015A), // Background color
+        color: const Color(0xFF57015A), // Background color
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // Welcome Text at the top
-              Text(
-                'Welcome to Daily Planner!',
+              const Text(
+                'Chào mừng bạn đến với Daily Planner!',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -22,18 +24,18 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // App Logo
               Image.asset(
                 "assets/img/logo-no-background.png",
                 height: 150, // Resize logo
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Tagline Text
-              Text(
-                'Plan your day, manage your time',
+              const Text(
+                'Lập kế hoạch, quản lý thời gian của bạn',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
@@ -41,7 +43,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 60), // Increased space before the button
+              const SizedBox(height: 60), // Increased space before the button
 
               // Login Button
               SizedBox(
@@ -62,8 +64,8 @@ class WelcomeScreen extends StatelessWidget {
                           BorderRadius.circular(10), // Rounded corners
                     ),
                   ),
-                  child: Text(
-                    "Let's Begin!",
+                  child: const Text(
+                    "Hãy cùng bắt đầu!",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,

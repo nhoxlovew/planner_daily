@@ -16,7 +16,8 @@ class _MainScreenState extends State<MainScreen> {
   // List of screens
   final List<Widget> _screens = [
     TaskListScreen(),
-    CalendarScreen(tasks: []), // Placeholder, will be updated in TaskListScreen
+    CalendarScreen(
+        tasks: const []), // Placeholder, will be updated in TaskListScreen
     SettingsScreen(),
   ];
 
@@ -46,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        backgroundColor: Color.fromARGB(255, 123, 81, 124),
+        backgroundColor: const Color.fromARGB(255, 123, 81, 124),
         selectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),

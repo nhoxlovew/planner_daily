@@ -5,6 +5,8 @@ import 'package:planner_daily/theme/theme_provider.dart'; // Import your ThemePr
 import 'package:provider/provider.dart'; // Import Provider
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -18,12 +20,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Cài đặt',
           style: TextStyle(
-              color: Colors.white, fontSize: 20), // Fixed font size for AppBar
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ), // Fixed font size for AppBar
         ),
-        backgroundColor: Color(0xFF57015A), // Match your app's color
+        backgroundColor: const Color(0xFF57015A), // Match your app's color
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -215,15 +220,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               }
             },
-            child: Text('Đăng xuất', style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF57015A),
-              padding: EdgeInsets.symmetric(vertical: 15),
-              textStyle: TextStyle(fontSize: 16), // Button text size
+              backgroundColor: const Color(0xFF57015A),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              textStyle: const TextStyle(fontSize: 16), // Button text size
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
+            child: Text('Đăng xuất', style: TextStyle(color: Colors.white)),
           ),
         ),
       ),

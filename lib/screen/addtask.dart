@@ -7,7 +7,7 @@ import 'package:planner_daily/service/notification_service.dart'; // Import noti
 class AddTaskScreen extends StatefulWidget {
   final Task? task;
 
-  AddTaskScreen({this.task});
+  const AddTaskScreen({super.key, this.task});
 
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
@@ -25,7 +25,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   bool _isCompleted = false; // Track completion status
   DateTime? _reminderTime; // Add reminder time
 
-  List<String> _organizers = ['Thanh Ngân', 'Hữu Nghĩa', 'Other'];
+  final List<String> _organizers = ['Thanh Ngân', 'Hữu Nghĩa', 'Other'];
 
   @override
   void initState() {
@@ -49,7 +49,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       return;
     }
 
-    // Set submitting state to true
     setState(() {
       _isSubmitting = true;
     });
@@ -84,11 +83,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         );
       }
 
-      // Pop the screen and return task to the previous screen
-      Navigator.of(context).pop(task); // Ensure to use Navigator.of(context)
+      // Only pop the screen if reminder time is NOT set
+      if (_reminderTime == null) {
+        Navigator.of(context)
+            .pop(task); // Pop the screen and return task to the previous screen
+      }
     }
 
-    // Reset submitting state
     setState(() {
       _isSubmitting = false;
     });
@@ -100,6 +101,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.blueAccent,
+            buttonTheme: const ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -112,6 +124,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.blueAccent,
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       final now = DateTime.now();
@@ -122,9 +142,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get the current theme
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.task == null ? 'Add Task' : 'Edit Task'),
+        title: Text(
+          widget.task == null ? 'Thêm nhiệm vụ' : 'Edit Task',
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        backgroundColor: const Color(0xFF57015A),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -133,90 +160,113 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: ListView(
             children: <Widget>[
               ListTile(
-                title: Text(_selectedDate == null
-                    ? 'Select a Date'
-                    : DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate!)),
-                trailing: Icon(Icons.calendar_today),
+                title: Text(
+                  _selectedDate == null
+                      ? 'Hãy chọn ngày --->'
+                      : DateFormat('EEEE, dd/MM/yyyy').format(_selectedDate!),
+                  style: theme.textTheme.headlineMedium,
+                ),
+                trailing: Icon(Icons.calendar_today, color: theme.primaryColor),
                 onTap: _pickDate,
               ),
-              SizedBox(height: 16),
-              TextFormField(
-                initialValue: _content,
-                decoration: InputDecoration(labelText: 'Task Content'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter the task content' : null,
-                onSaved: (value) => _content = value,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                initialValue: _timeRange,
-                decoration: InputDecoration(
-                    labelText: 'Time Range (e.g. 8:00 -> 11:00)'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter the time range' : null,
-                onSaved: (value) => _timeRange = value,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                initialValue: _location,
-                decoration: InputDecoration(labelText: 'Location'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter the location' : null,
-                onSaved: (value) => _location = value,
-              ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              _buildTextField(
+                  'Tiêu đề',
+                  _content,
+                  'Vui lòng nhập tiêu đề công việc',
+                  (value) => _content = value),
+              const SizedBox(height: 16),
+              _buildTextField('Thời gian (e.g. 8:00 -> 11:00)', _timeRange,
+                  'Vui lòng nhập thời gian', (value) => _timeRange = value),
+              const SizedBox(height: 16),
+              _buildTextField('Vị trí', _location, 'Vui lòng nhập vị trí',
+                  (value) => _location = value),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _organizer,
                 items: _organizers.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value),
+                    child: Text(value, style: theme.textTheme.bodyLarge),
                   );
                 }).toList(),
-                decoration: InputDecoration(labelText: 'Organizer'),
+                decoration: InputDecoration(
+                  labelText: 'Chủ trì',
+                  labelStyle: theme.textTheme.bodyLarge,
+                  border: const OutlineInputBorder(),
+                ),
                 validator: (value) =>
-                    value == null ? 'Please select an organizer' : null,
+                    value == null ? 'Vui lòng chọn người chủ trì' : null,
                 onChanged: (value) {
                   setState(() {
                     _organizer = value;
                   });
                 },
               ),
-              SizedBox(height: 16),
-              TextFormField(
-                initialValue: _notes,
-                decoration: InputDecoration(labelText: 'Notes'),
-                onSaved: (value) => _notes = value,
-              ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              _buildTextField(
+                  'Ghi chú', _notes, null, (value) => _notes = value, false),
+              const SizedBox(height: 16),
               SwitchListTile(
-                title: Text('Completed'),
+                title: Text('Trạng thái hoàn thành',
+                    style: theme.textTheme.bodyLarge),
                 value: _isCompleted,
+                activeColor: theme.primaryColor,
                 onChanged: (value) {
                   setState(() {
-                    _isCompleted = value; // Toggle completion status
+                    _isCompleted = value;
                   });
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ListTile(
-                title: Text(_reminderTime == null
-                    ? 'Set Reminder Time'
-                    : DateFormat.jm().format(_reminderTime!)),
-                trailing: Icon(Icons.alarm),
+                title: Text(
+                  _reminderTime == null
+                      ? 'Đặt thời gian nhắc'
+                      : DateFormat.jm().format(_reminderTime!),
+                  style: theme.textTheme.bodyLarge,
+                ),
+                trailing: Icon(Icons.alarm, color: theme.primaryColor),
                 onTap: _pickReminderTime,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _isSubmitting
-                    ? null // Disable when submitting
-                    : _submitTask,
-                child: Text(widget.task == null ? 'Add Task' : 'Update Task'),
+                onPressed: _isSubmitting ? null : _submitTask,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF57015A),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: Text(
+                  widget.task == null ? 'Thêm nhiệm vụ' : 'Update Task',
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Helper method to build text fields with consistent style
+  Widget _buildTextField(String label, String? initialValue,
+      String? validatorMessage, Function(String?) onSaved,
+      [bool isRequired = true]) {
+    final theme = Theme.of(context);
+    return TextFormField(
+      initialValue: initialValue,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: theme.textTheme.bodyLarge,
+        border: const OutlineInputBorder(),
+      ),
+      validator: isRequired
+          ? (value) => value!.isEmpty ? validatorMessage : null
+          : null,
+      onSaved: onSaved,
     );
   }
 }

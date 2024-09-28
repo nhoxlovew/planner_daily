@@ -3,6 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:planner_daily/data/Dbhepler/db_helper.dart'; // Make sure to import your DBHelper
 
 class TaskStatisticsScreen extends StatefulWidget {
+  const TaskStatisticsScreen({super.key});
+
   @override
   _TaskStatisticsScreenState createState() => _TaskStatisticsScreenState();
 }
@@ -31,9 +33,9 @@ class _TaskStatisticsScreenState extends State<TaskStatisticsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Thống kê công việc', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFF57015A), // Match your app's color
+        title: const Text('Thống kê công việc',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF57015A), // Match your app's color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,7 +45,7 @@ class _TaskStatisticsScreenState extends State<TaskStatisticsScreen> {
               'Tổng quan công việc',
               style: Theme.of(context).textTheme.headlineLarge,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: PieChart(
                 PieChartData(
@@ -73,7 +75,7 @@ class _TaskStatisticsScreenState extends State<TaskStatisticsScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Optional: Display more detailed statistics
             Card(
               elevation: 4,
@@ -82,10 +84,10 @@ class _TaskStatisticsScreenState extends State<TaskStatisticsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Chi tiết thống kê:',
+                    const Text('Chi tiết thống kê:',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text('Đã hoàn thành: $completedTasks'),
                     Text('Mới tạo: $newTasks'),
                     Text('Đang thực hiện: $inProgressTasks'),

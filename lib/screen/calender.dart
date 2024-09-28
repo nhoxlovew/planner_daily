@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner_daily/data/model/task.dart';
 import 'package:planner_daily/data/Dbhepler/db_helper.dart';
-import 'package:planner_daily/screen/list.dart';
+import 'package:planner_daily/screen/addtask.dart';
 import 'package:planner_daily/screen/taskdetail.dart';
 import 'package:planner_daily/screen/updatetask.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -10,7 +10,7 @@ import 'package:table_calendar/table_calendar.dart';
 class CalendarScreen extends StatefulWidget {
   final List<Task> tasks;
 
-  CalendarScreen({required this.tasks});
+  const CalendarScreen({super.key, required this.tasks});
 
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
@@ -75,16 +75,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Xóa nhiệm vụ'),
-          content: Text('Bạn có chắc chắn muốn xóa nhiệm vụ này không?'),
+          title: const Text('Delete Task'),
+          content: const Text('Are you sure you want to delete this task?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Hủy'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Xóa'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -103,20 +103,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     final selectedTasks = _events[_selectedDate] ?? [];
     return MediaQuery(
-      data: MediaQuery.of(context)
-          .copyWith(textScaleFactor: 1.0), // Fixed text scale factor
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFF57015A),
-          title: Text(
+          automaticallyImplyLeading: false,
+          backgroundColor: const Color(0xFF57015A),
+          title: const Text(
             'Lịch công việc',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          centerTitle: true,
         ),
         body: Stack(
           children: [
@@ -130,39 +129,34 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   _onDateSelected(selectedDay);
                 },
                 calendarStyle: CalendarStyle(
-                  selectedDecoration: BoxDecoration(
-                    color: Color(0xFF57015A), // Modern color
+                  selectedDecoration: const BoxDecoration(
+                    color: Color(0xFF57015A),
                     shape: BoxShape.circle,
                   ),
-                  todayDecoration: BoxDecoration(
+                  todayDecoration: const BoxDecoration(
                     color: Colors.orangeAccent,
                     shape: BoxShape.circle,
                   ),
-                  // Update text colors based on theme
                   weekendTextStyle: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary, // Theme color for weekends
+                    color: Theme.of(context).colorScheme.secondary,
                     fontSize: 14,
                   ),
                   holidayTextStyle: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary, // Theme color for holidays
+                    color: Theme.of(context).colorScheme.secondary,
                     fontSize: 14,
                   ),
-                  defaultTextStyle: TextStyle(
-                    color: Colors.black87, // Default text color
-                    fontSize: 16, // Set fixed font size
+                  defaultTextStyle: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
                   ),
                 ),
-                headerStyle: HeaderStyle(
+                headerStyle: const HeaderStyle(
                   formatButtonVisible: false,
                   titleCentered: true,
                   titleTextStyle: TextStyle(
                     color: Color(0xFF57015A),
                     fontWeight: FontWeight.bold,
-                    fontSize: 20, // Set fixed font size
+                    fontSize: 20,
                   ),
                 ),
               ),
@@ -176,15 +170,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.9),
                     borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
+                        const BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   child: ListView.builder(
                     itemCount: selectedTasks.length,
                     itemBuilder: (context, index) {
                       final task = selectedTasks[index];
                       return Card(
-                        margin:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
                         elevation: 5,
                         shadowColor: Colors.black26,
                         shape: RoundedRectangleBorder(
@@ -193,25 +187,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         child: ListTile(
                           title: Text(
                             task.content,
-                            style: TextStyle(
-                              fontSize: 16, // Fixed font size
+                            style: const TextStyle(
+                              fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           subtitle: Text(
                             task.timeRange,
-                            style: TextStyle(fontSize: 14), // Fixed font size
+                            style: const TextStyle(fontSize: 14),
                           ),
                           onTap: () => _navigateToDetail(task),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.edit, color: Colors.blue),
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.blue),
                                 onPressed: () => _navigateToUpdate(task),
                               ),
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () => _deleteTask(task),
                               ),
                             ],
@@ -226,17 +222,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            // Navigate to Add Task Screen
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TaskListScreen()),
-            ).then((_) {
-              setState(() {
-                _events = _groupTasksByDate(widget.tasks);
-              });
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AddTaskScreen()), // Assuming you have an AddTaskScreen
+            ).then((newTask) {
+              if (newTask != null) {
+                setState(() {
+                  widget.tasks.add(newTask); // Update tasks list
+                  _events =
+                      _groupTasksByDate(widget.tasks); // Re-group tasks by date
+                });
+              }
             });
           },
+          foregroundColor: Colors.white,
+          backgroundColor: const Color(0xFF57015A),
           child: Icon(Icons.add),
-          backgroundColor: Color(0xFF57015A),
         ),
       ),
     );
