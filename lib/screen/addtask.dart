@@ -151,6 +151,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xFF57015A),
       ),
       body: Padding(

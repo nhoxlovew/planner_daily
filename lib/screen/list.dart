@@ -132,13 +132,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
               fontSize: 20,
               fontWeight: FontWeight.bold,
             )),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            color: Colors.white,
-            onPressed: _navigateToCalendar, // Navigate to CalendarScreen
-          ),
-        ],
       ),
       body: ReorderableListView.builder(
         itemCount: _tasks.length,

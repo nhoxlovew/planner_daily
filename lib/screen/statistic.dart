@@ -34,7 +34,11 @@ class _TaskStatisticsScreenState extends State<TaskStatisticsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thống kê công việc',
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xFF57015A), // Match your app's color
       ),
       body: Padding(

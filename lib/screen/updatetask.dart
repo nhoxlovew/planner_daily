@@ -125,6 +125,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
               fontSize: 20,
               fontWeight: FontWeight.bold,
             )),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xFF57015A),
       ),
       body: Padding(

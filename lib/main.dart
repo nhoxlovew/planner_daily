@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Daily Planner',
       theme: themeProvider.themeData, // Use the theme from ThemeProvider
-      home: WelcomeScreen(), // Set WelcomeScreen as the home screen
+      home: const WelcomeScreen(), // Set WelcomeScreen as the home screen
       routes: {
         '/login': (context) => LoginScreen(),
         // Add other routes as necessary
